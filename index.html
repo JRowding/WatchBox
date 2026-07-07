@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>WatchBox Alpha</title>
+<style>
+:root{
+  --bg:#060606;
+  --panel:#111;
+  --panel2:#181818;
+  --gold:#d7ae58;
+  --gold2:#f5d98a;
+  --muted:#b7aa8c;
+  --text:#fff7df;
+  --green:#77ff9b;
+  --red:#ff6b6b;
+  --blue:#67b7ff;
+  --purple:#be74ff;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{
+  margin:0;
+  min-height:100vh;
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(215,174,88,.24),transparent 32%),
+    radial-gradient(circle at 50% 100%,rgba(255,255,255,.05),transparent 30%),
+    #050505;
+  overflow-x:hidden;
+}
+.app{max-width:520px;margin:0 auto;padding:14px 14px 92px}
+.top{
+  position:sticky;top:0;z-index:10;
+  margin:-14px -14px 12px;
+  padding:18px 14px 12px;
+  background:linear-gradient(180deg,#090909 70%,rgba(9,9,9,.82));
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(215,174,88,.35);
+}
+.logo{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.logo h1{margin:0;font-size:28px;letter-spacing:.08em;color:var(--gold2)}
+.logo small{display:block;color:var(--muted);font-size:12px;letter-spacing:.12em;margin-top:2px}
+.cash{
+  margin-top:14px;
+  background:linear-gradient(135deg,#171717,#0d0d0d);
+  border:1px solid rgba(215,174,88,.38);
+  border-radius:18px;
+  padding:12px 14px;
+  display:flex;justify-content:space-between;align-items:center;
+  box-shadow:0 10px 30px rgba(0,0,0,.35);
+}
+.cash strong{font-size:26px;color:var(--green)}
+.statline{font-size:12px;color:var(--muted);margin-top:5px}
+.panel{
+  background:linear-gradient(180deg,rgba(28,28,28,.98),rgba(12,12,12,.98));
+  border:1px solid rgba(215,174,88,.28);
+  border-radius:22px;
+  padding:16px;
+  margin:14px 0;
+  box-shadow:0 16px 40px rgba(0,0,0,.35);
+}
+h2{margin:0 0 12px;color:var(--gold2);font-size:20px}
+p{color:var(--muted);line-height:1.35}
+button{
+  border:0;
+  border-radius:16px;
+  padding:14px 16px;
+  background:linear-gradient(135deg,var(--gold2),var(--gold));
+  color:#111;
+  font-weight:800;
+  font-size:16px;
+  cursor:pointer;
+  box-shadow:0 8px 20px rgba(215,174,88,.18);
+}
+button.secondary{
+  background:#171717;
+  color:var(--gold2);
+  border:1px solid rgba(215,174,88,.45);
+}
+button.danger{
+  background:#2a1111;
+  color:#ffd2d2;
+  border:1px solid rgba(255,107,107,.45);
+}
+button:disabled{opacity:.45;cursor:not-allowed}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bigbtn{width:100%;font-size:20px;padding:20px;border-radius:20px}
+.boxCard{
+  border:1px solid rgba(215,174,88,.25);
+  border-radius:18px;
+  padding:14px;
+  background:radial-gradient(circle at top,rgba(215,174,88,.12),transparent 45%),#101010;
+}
+.boxIcon{
+  width:112px;height:92px;margin:6px auto 12px;border-radius:16px;
+  background:linear-gradient(145deg,#282014,#080808);
+  border:2px solid rgba(215,174,88,.7);
+  position:relative;
+  box-shadow:0 0 26px rgba(215,174,88,.22), inset 0 0 18px rgba(255,255,255,.05);
+}
+.boxIcon:before{
+  content:"";
+  position:absolute;left:12px;right:12px;top:34px;height:8px;
+  background:rgba(215,174,88,.8);border-radius:99px;
+}
+.boxIcon:after{
+  content:"";
+  position:absolute;top:-8px;left:18px;right:18px;height:18px;border-radius:10px 10px 5px 5px;
+  background:linear-gradient(135deg,#3a2a13,#121212);
+  border:1px solid rgba(215,174,88,.6);
+}
+.watchArt{
+  width:118px;height:118px;border-radius:50%;margin:8px auto 12px;
+  background:radial-gradient(circle,#2a2a2a,#090909 70%);
+  border:2px solid rgba(215,174,88,.45);
+  display:grid;place-items:center;
+  font-size:54px;
+  box-shadow:0 0 28px rgba(215,174,88,.15);
+}
+.watchArt span{filter:drop-shadow(0 8px 12px #000)}
+.tabs{
+  position:fixed;bottom:0;left:0;right:0;z-index:20;
+  background:rgba(7,7,7,.94);backdrop-filter:blur(12px);
+  border-top:1px solid rgba(215,174,88,.35);
+  display:flex;justify-content:center;padding:8px env(safe-area-inset-right) calc(8px + env(safe-area-inset-bottom)) env(safe-area-inset-left);
+}
+.tabs button{
+  flex:1;max-width:105px;margin:0 2px;
+  padding:10px 4px;border-radius:14px;
+  font-size:12px;background:transparent;color:var(--muted);
+  box-shadow:none;border:1px solid transparent;
+}
+.tabs button.active{color:var(--gold2);border-color:rgba(215,174,88,.35);background:#141414}
+.hidden{display:none}
+.badge{
+  display:inline-block;padding:5px 9px;border-radius:999px;font-size:12px;font-weight:800;
+  background:#222;color:#fff;margin:3px;
+}
+.Common{color:#ddd}.Uncommon{color:#8dff9b}.Rare{color:#72bdff}.Epic{color:#c883ff}.Legendary{color:#ffe173}.Grail{color:#ff7777}.HolyGrail{color:#fff;background:linear-gradient(90deg,#ffec9f,#fff,#ffec9f);-webkit-background-clip:text;background-clip:text}
+.collectionGrid{display:grid;grid-template-columns:1fr;gap:10px}
+.item{
+  display:flex;gap:12px;align-items:center;text-align:left;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;padding:10px;background:#101010;
+}
+.item .mini{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:#1b1b1b;border:1px solid rgba(215,174,88,.25);font-size:28px}
+.item b{color:var(--gold2)}
+.item small{color:var(--muted)}
+.reveal{
+  position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.88);
+  display:none;align-items:center;justify-content:center;padding:18px;
+}
+.reveal.show{display:flex}
+.revealCard{
+  width:min(420px,96vw);border-radius:28px;padding:24px;
+  text-align:center;border:1px solid rgba(215,174,88,.55);
+  background:radial-gradient(circle at top,rgba(215,174,88,.22),transparent 48%),#0d0d0d;
+  box-shadow:0 0 60px rgba(215,174,88,.25);
+  animation:pop .35s ease-out;
+}
+@keyframes pop{from{transform:scale(.9);opacity:.2}to{transform:scale(1);opacity:1}}
+.shake{animation:shake .65s ease-in-out infinite}
+@keyframes shake{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg) scale(1.03)}}
+.glowPulse{animation:glow 1.2s ease-in-out infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 20px rgba(215,174,88,.2)}50%{box-shadow:0 0 70px rgba(215,174,88,.8)}}
+.marketRow{display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.08);padding:10px 0;color:var(--muted)}
+.marketRow strong{color:var(--text)}
+.up{color:var(--green)}.down{color:var(--red)}
+.notice{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div class="logo">
+      <div>
+        <h1>WATCHBOX</h1>
+        <small>OPEN · COLLECT · UPGRADE</small>
+      </div>
+      <div style="font-size:34px">⌚</div>
+    </div>
+    <div class="cash">
+      <div>
+        <div class="notice">Cash</div>
+        <strong id="cash">£0</strong>
+      </div>
+      <div style="text-align:right">
+        <div class="notice">Collection</div>
+        <strong id="progress" style="font-size:18px;color:var(--gold2)">0/0</strong>
+      </div>
+    </div>
+  </div>
+
+  <section id="earn" class="screen">
+    <div class="panel">
+      <h2>💵 Earn Cash</h2>
+      <p>Tap to build your bankroll, then open boxes to chase legendary watches.</p>
+      <button class="bigbtn" onclick="earnCash()">👆 Earn £<span id="tapPower">25</span></button>
+      <div class="statline">Auto income: £<span id="autoIncome">0</span>/sec</div>
+    </div>
+
+    <div class="panel">
+      <h2>⬆️ Upgrades</h2>
+      <div class="grid">
+        <button onclick="buyUpgrade('tap')" id="tapUpgrade">Tap Power</button>
+        <button onclick="buyUpgrade('auto')" id="autoUpgrade">Auto Income</button>
+        <button onclick="buyUpgrade('quality')" id="qualityUpgrade">Better Quality</button>
+        <button onclick="buyUpgrade('luck')" id="luckUpgrade">Better Luck</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>🏛️ Cabinet</h2>
+      <p id="bestWatch">Your finest watch will appear here.</p>
+    </div>
+  </section>
+
+  <section id="boxes" class="screen hidden">
+    <div class="panel">
+      <h2>📦 Box Shop</h2>
+      <div class="boxCard">
+        <div class="boxIcon"></div>
+        <h3>Basic Box</h3>
+        <p>Every brand is possible from the start. Better boxes arrive next.</p>
+        <button onclick="openBox('basic')">Open for £100</button>
+      </div>
+      <br>
+      <div class="grid">
+        <button onclick="openBox('premium')">Premium £1,000</button>
+        <button onclick="openBox('luxury')">Luxury £10,000</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Latest Pull</h2>
+      <div id="latestPull" class="notice">No box opened yet.</div>
+    </div>
+  </section>
+
+  <section id="collection" class="screen hidden">
+    <div class="panel">
+      <h2>📚 Collection Album</h2>
+      <p><span id="ownedCount">0</span> watches owned. Unique discovered: <span id="uniqueCount">0</span>/<span id="totalWatches">0</span>.</p>
+      <div id="collectionList" class="collectionGrid"></div>
+    </div>
+  </section>
+
+  <section id="market" class="screen hidden">
+    <div class="panel">
+      <h2>📈 Market</h2>
+      <p>Market values fluctuate by brand. Sell instantly for safety, or list to market for today’s rate.</p>
+      <div id="marketList"></div>
+    </div>
+    <div class="panel">
+      <h2>💰 Market Inventory</h2>
+      <div id="marketInventory" class="collectionGrid"></div>
+    </div>
+  </section>
+
+  <section id="stats" class="screen hidden">
+    <div class="panel">
+      <h2>🏆 Stats</h2>
+      <p id="statsText"></p>
+      <button class="danger" onclick="resetGame()">Reset Save</button>
+    </div>
+  </section>
+</div>
+
+<div class="tabs">
+  <button class="active" onclick="showTab('earn',this)">💵 Earn</button>
+  <button onclick="showTab('boxes',this)">📦 Boxes</button>
+  <button onclick="showTab('collection',this)">📚 Album</button>
+  <button onclick="showTab('market',this)">📈 Market</button>
+  <button onclick="showTab('stats',this)">🏆 Stats</button>
+</div>
+
+<div id="reveal" class="reveal">
+  <div class="revealCard">
+    <div id="revealStage">
+      <div class="boxIcon shake glowPulse"></div>
+      <h2>Opening...</h2>
+      <p>The lid unlocks. Something is inside.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const WATCHES=[
+ {brand:"Casio",model:"F-91W",rarity:"Common",base:25,icon:"⌚"},
+ {brand:"Seiko",model:"5 Sports",rarity:"Common",base:180,icon:"⌚"},
+ {brand:"Citizen",model:"Tsuyosa",rarity:"Uncommon",base:300,icon:"⌚"},
+ {brand:"Tissot",model:"PRX",rarity:"Uncommon",base:620,icon:"⌚"},
+ {brand:"Hamilton",model:"Khaki Field",rarity:"Rare",base:850,icon:"⌚"},
+ {brand:"Longines",model:"HydroConquest",rarity:"Rare",base:1300,icon:"⌚"},
+ {brand:"Tudor",model:"Black Bay 58",rarity:"Epic",base:3500,icon:"⌚"},
+ {brand:"Omega",model:"Speedmaster Moonwatch",rarity:"Epic",base:6500,icon:"⌚"},
+ {brand:"Omega",model:"Seamaster Diver 300M",rarity:"Epic",base:5200,icon:"⌚"},
+ {brand:"Cartier",model:"Santos",rarity:"Legendary",base:7800,icon:"⌚"},
+ {brand:"Rolex",model:"Submariner Date",rarity:"Legendary",base:12000,icon:"⌚"},
+ {brand:"Rolex",model:"GMT-Master II Pepsi",rarity:"Legendary",base:17000,icon:"⌚"},
+ {brand:"Rolex",model:"Daytona",rarity:"Grail",base:32000,icon:"⌚"},
+ {brand:"Audemars Piguet",model:"Royal Oak",rarity:"Grail",base:42000,icon:"⌚"},
+ {brand:"Patek Philippe",model:"Nautilus",rarity:"Grail",base:95000,icon:"⌚"},
+ {brand:"Richard Mille",model:"RM 011",rarity:"HolyGrail",base:250000,icon:"⌚"}
+];
+
+const BOXES={
+ basic:{cost:100,boost:0},
+ premium:{cost:1000,boost:.08},
+ luxury:{cost:10000,boost:.18}
+};
+
+const QUALITY=[
+ ["Heavily Worn",.6],["Worn",.8],["Good",1],["Excellent",1.2],["Mint",1.5],["Factory Stickers",2.5]
+];
+
+let state=load()||{
+ cash:500,tap:25,auto:0,quality:0,luck:0,
+ tapCost:250,autoCost:500,qualityCost:2000,luckCost:5000,
+ owned:[],stats:{opened:0,earned:0,spent:0,sold:0,marketSold:0}
+};
+
+function load(){try{return JSON.parse(localStorage.getItem("watchbox_alpha_save"))}catch(e){return null}}
+function save(){localStorage.setItem("watchbox_alpha_save",JSON.stringify(state))}
+function money(n){return "£"+Math.floor(n).toLocaleString()}
+function brands(){return [...new Set(WATCHES.map(w=>w.brand))]}
+function marketRate(brand){
+ const day=Math.floor(Date.now()/86400000);
+ let x=0;
+ for(let i=0;i<brand.length;i++) x+=brand.charCodeAt(i)*(i+1);
+ const raw=Math.sin((day+x)*.71)*.22 + Math.cos((day+x)*.17)*.12;
+ return Math.max(.65,Math.min(1.55,1+raw));
+}
+function showTab(id,btn){
+ document.querySelectorAll(".screen").forEach(s=>s.classList.add("hidden"));
+ document.getElementById(id).classList.remove("hidden");
+ document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
+ btn.classList.add("active");
+ render();
+}
+function earnCash(){
+ state.cash+=state.tap;
+ state.stats.earned+=state.tap;
+ render();
+}
+function buyUpgrade(type){
+ let key=type+"Cost";
+ if(state.cash<state[key]) return alert("Not enough cash.");
+ state.cash-=state[key]; state.stats.spent+=state[key];
+ if(type==="tap"){state.tap+=25;state[key]=Math.floor(state[key]*1.65)}
+ if(type==="auto"){state.auto+=10;state[key]=Math.floor(state[key]*1.8)}
+ if(type==="quality"){state.quality+=1;state[key]=Math.floor(state[key]*2.25)}
+ if(type==="luck"){state.luck+=1;state[key]=Math.floor(state[key]*2.5)}
+ render();
+}
+function rarityRoll(boost){
+ let r=Math.random()-(state.luck*.006)-boost;
+ if(r<.001) return "HolyGrail";
+ if(r<.012) return "Grail";
+ if(r<.055) return "Legendary";
+ if(r<.17) return "Epic";
+ if(r<.35) return "Rare";
+ if(r<.62) return "Uncommon";
+ return "Common";
+}
+function pickWatch(rarity){
+ let pool=WATCHES.filter(w=>w.rarity===rarity);
+ if(!pool.length) pool=WATCHES;
+ return pool[Math.floor(Math.random()*pool.length)];
+}
+function pickQuality(){
+ let roll=Math.random()+state.quality*.035;
+ if(roll>.965) return QUALITY[5];
+ if(roll>.82) return QUALITY[4];
+ if(roll>.58) return QUALITY[3];
+ if(roll>.30) return QUALITY[2];
+ if(roll>.12) return QUALITY[1];
+ return QUALITY[0];
+}
+function openBox(type){
+ const box=BOXES[type];
+ if(state.cash<box.cost) return alert("Not enough cash.");
+ state.cash-=box.cost; state.stats.spent+=box.cost;
+ state.stats.opened++;
+ save();
+ const overlay=document.getElementById("reveal");
+ const stage=document.getElementById("revealStage");
+ overlay.classList.add("show");
+ stage.innerHTML='<div class="boxIcon shake glowPulse"></div><h2>Opening...</h2><p>The lid unlocks. A rarity glow flickers.</p>';
+ setTimeout(()=>{
+   const rarity=rarityRoll(box.boost);
+   stage.innerHTML='<h2 class="'+rarity+'">'+rarity.replace("HolyGrail","Holy Grail")+'</h2><div class="watchArt glowPulse"><span>⌚</span></div><p>A silhouette rises from the box...</p>';
+   setTimeout(()=>{
+     const base=pickWatch(rarity);
+     const q=pickQuality();
+     const value=Math.floor(base.base*q[1]);
+     const item={...base,quality:q[0],multi:q[1],value,id:Date.now()+Math.random()};
+     state.owned.unshift(item);
+     const newDiscovery=!state.owned.slice(1).some(w=>w.brand===item.brand&&w.model===item.model);
+     stage.innerHTML=renderReveal(item,newDiscovery);
+     document.getElementById("latestPull").innerHTML=cardText(item,newDiscovery);
+     render();
+   },1000);
+ },900);
+}
+function renderReveal(w,newDiscovery){
+ return `
+ <div class="watchArt"><span>${w.icon}</span></div>
+ <h2>${newDiscovery?"✨ NEW DISCOVERY ✨":"Duplicate Pull"}</h2>
+ <h3>${w.brand}<br>${w.model}</h3>
+ <div class="badge ${w.rarity}">${w.rarity.replace("HolyGrail","Holy Grail")}</div>
+ <div class="badge">${w.quality}</div>
+ <p>Estimated Value: <b>${money(w.value)}</b></p>
+ <div class="grid">
+   <button onclick="sellItem('${w.id}','instant')">Instant Sell</button>
+   <button class="secondary" onclick="sellItem('${w.id}','market')">Sell Market</button>
+ </div>
+ <br><button class="secondary" onclick="closeReveal()">Keep</button>`;
+}
+function cardText(w,newDiscovery){
+ return `<b>${w.brand} ${w.model}</b><br><span class="${w.rarity}">${w.rarity.replace("HolyGrail","Holy Grail")}</span> · ${w.quality}<br>${money(w.value)} ${newDiscovery?" · New Discovery":""}`;
+}
+function closeReveal(){document.getElementById("reveal").classList.remove("show");render()}
+function sellItem(id,mode){
+ const i=state.owned.findIndex(w=>String(w.id)===String(id));
+ if(i<0) return;
+ const w=state.owned[i];
+ const rate=mode==="market"?marketRate(w.brand):.8;
+ const value=Math.floor(w.value*rate);
+ state.cash+=value;
+ state.stats.sold++;
+ if(mode==="market") state.stats.marketSold++;
+ state.owned.splice(i,1);
+ document.getElementById("latestPull").innerHTML=`Sold ${w.brand} ${w.model} for ${money(value)} ${mode==="market"?"on market":"instantly"}.`;
+ closeReveal();
+ render();
+}
+function uniqueCount(){
+ return new Set(state.owned.map(w=>w.brand+"|"+w.model)).size;
+}
+function render(){
+ document.getElementById("cash").textContent=money(state.cash);
+ document.getElementById("tapPower").textContent=state.tap;
+ document.getElementById("autoIncome").textContent=state.auto;
+ document.getElementById("progress").textContent=uniqueCount()+"/"+WATCHES.length;
+ document.getElementById("ownedCount").textContent=state.owned.length;
+ document.getElementById("uniqueCount").textContent=uniqueCount();
+ document.getElementById("totalWatches").textContent=WATCHES.length;
+ document.getElementById("tapUpgrade").textContent="Tap Power "+money(state.tapCost);
+ document.getElementById("autoUpgrade").textContent="Auto Income "+money(state.autoCost);
+ document.getElementById("qualityUpgrade").textContent="Better Quality "+money(state.qualityCost);
+ document.getElementById("luckUpgrade").textContent="Better Luck "+money(state.luckCost);
+
+ const best=[...state.owned].sort((a,b)=>b.value-a.value)[0];
+ document.getElementById("bestWatch").innerHTML=best?`Best piece: <b>${best.brand} ${best.model}</b><br>${best.quality} · ${money(best.value)}`:"Your finest watch will appear here.";
+
+ document.getElementById("collectionList").innerHTML=state.owned.length?state.owned.map(w=>`
+ <div class="item">
+   <div class="mini">${w.icon}</div>
+   <div style="flex:1">
+    <b>${w.brand} ${w.model}</b><br>
+    <small><span class="${w.rarity}">${w.rarity.replace("HolyGrail","Holy Grail")}</span> · ${w.quality} · ${money(w.value)}</small>
+   </div>
+   <button class="secondary" onclick="sellItem('${w.id}','instant')">Sell</button>
+ </div>`).join(""):"<p>No watches yet. Open a box.</p>";
+
+ document.getElementById("marketList").innerHTML=brands().map(b=>{
+   const r=marketRate(b);
+   return `<div class="marketRow"><strong>${b}</strong><span class="${r>=1?'up':'down'}">${Math.round((r-1)*100)}%</span></div>`
+ }).join("");
+
+ document.getElementById("marketInventory").innerHTML=state.owned.length?state.owned.map(w=>{
+   const r=marketRate(w.brand);
+   return `<div class="item">
+    <div class="mini">${w.icon}</div>
+    <div style="flex:1"><b>${w.brand} ${w.model}</b><br><small>Market: ${money(w.value*r)} (${Math.round((r-1)*100)}%)</small></div>
+    <button onclick="sellItem('${w.id}','market')">List</button>
+   </div>`
+ }).join(""):"<p>No watches to sell.</p>";
+
+ document.getElementById("statsText").innerHTML=
+ `Boxes opened: <b>${state.stats.opened}</b><br>
+ Cash earned: <b>${money(state.stats.earned)}</b><br>
+ Cash spent: <b>${money(state.stats.spent)}</b><br>
+ Watches sold: <b>${state.stats.sold}</b><br>
+ Market sales: <b>${state.stats.marketSold}</b>`;
+ save();
+}
+function resetGame(){
+ if(confirm("Reset WatchBox save?")){
+  localStorage.removeItem("watchbox_alpha_save");
+  location.reload();
+ }
+}
+setInterval(()=>{if(state.auto>0){state.cash+=state.auto;state.stats.earned+=state.auto;render()}},1000);
+render();
+</script>
+</body>
+</html>
